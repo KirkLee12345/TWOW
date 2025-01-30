@@ -1,22 +1,22 @@
 VERSION 5.00
 Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Begin VB.Form Login 
-   BorderStyle     =   3  'Fixed Dialog
-   Caption         =   "兵者-登录"
+   BorderStyle     =   1  'Fixed Single
+   Caption         =   "兵者-登录 *开发测试版本，不代表最终品质"
    ClientHeight    =   2175
    ClientLeft      =   2835
    ClientTop       =   3480
    ClientWidth     =   4695
+   Icon            =   "Login.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   1285.062
    ScaleMode       =   0  'User
    ScaleWidth      =   4408.351
-   ShowInTaskbar   =   0   'False
-   StartUpPosition =   2  '屏幕中心
+   StartUpPosition =   1  '所有者中心
    Begin MSWinsockLib.Winsock Winsock1 
-      Left            =   2160
+      Left            =   2280
       Top             =   1320
       _ExtentX        =   741
       _ExtentY        =   741
@@ -47,7 +47,7 @@ Begin VB.Form Login
       Left            =   960
       TabIndex        =   4
       Top             =   1320
-      Width           =   1140
+      Width           =   1260
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
@@ -57,7 +57,7 @@ Begin VB.Form Login
       Left            =   2760
       TabIndex        =   5
       Top             =   1320
-      Width           =   1140
+      Width           =   1260
    End
    Begin VB.TextBox txt2 
       Height          =   345
@@ -150,15 +150,21 @@ Public ll, mm, message, islogin, allrooms
 
 Private Sub Form_Load()
     
-    Debugmode = True
+    Debugmode = False
     
-    version = 1
-    version_str = "V1.0"
-    last_date = "2023-08-31"
+    version = 2
+    version_str = "V1.1"
+    last_date = "2025-01-29"
     ll = "C:\Windows\TWOWZHMM.txt"
     
     islogin = "False"
     
+    If Debugmode Then
+        Winsock1.RemoteHost = "127.0.0.1"
+        Sign.Winsock1.RemoteHost = "127.0.0.1"
+        Sign.Winsock2.RemoteHost = "127.0.0.1"
+        Sign.Winsock3.RemoteHost = "127.0.0.1"
+    End If
     If Debugmode Then Label1.Caption = "[" + Time$ + "]" + "Debug模式"
     
     If Dir(ll) <> "" Then
@@ -292,7 +298,7 @@ End Sub
 Private Sub Winsock1_Connect()
 
     Label1.Caption = "[" + Time$ + "]" + "正在登陆..."
-    Winsock1.SendData message
+    Winsock1.SendData UTF8_Encode(message)
 
 End Sub
 
@@ -300,12 +306,13 @@ End Sub
 
 Private Sub Winsock1_DataArrival(ByVal bytesTotal As Long)
     
-    
+    Dim xx() As Byte
     
     If islogin = "True" Then
         
         Dim x As String
-        Winsock1.GetData x
+        Winsock1.GetData xx
+        x = Utf8ToUnicode(xx)
         ToMenu (x)
 
         If Debugmode Then Check1.Caption = "[" + Time$ + "]" + x
@@ -318,17 +325,18 @@ Private Sub Winsock1_DataArrival(ByVal bytesTotal As Long)
         
         
         Dim datat As String
-        Winsock1.GetData datat
+        Winsock1.GetData xx
+        datat = Utf8ToUnicode(xx)
         datat = Replace(datat, "  ", " ")
-        Data = Split(datat, " ")
+        data = Split(datat, " ")
         
         
         If Debugmode Then Check1.Caption = "[" + Time$ + "]" + datat
         
         
-        If Data(0) = "loginfail" Then
+        If data(0) = "loginfail" Then
             Winsock1.Close
-            tv = Data(1)
+            tv = Int(data(1))
             If version < tv Then
                 Label1.Caption = "[" + Time$ + "]" + "登陆失败，版本过低，请及时更新"
             End If
@@ -339,28 +347,33 @@ Private Sub Winsock1_DataArrival(ByVal bytesTotal As Long)
             cmdCancel.Enabled = False
         End If
         
-        If Data(0) = "账号密码错误!" Then
+        If data(0) = "账号密码错误!" Then
             Winsock1.Close
             Label1.Caption = "[" + Time$ + "]" + "账号密码错误!"
             cmdOK.Enabled = True
             cmdCancel.Enabled = False
         End If
         
-        If Data(0) = "登陆成功!" Then
+        If data(0) = "登陆成功!" Then
             islogin = "True"
             Menu.Show
             If Not Debugmode Then Login.Hide
         End If
         
-        If Data(0) = "重复登陆!" Then
-            Label1.Caption = "[" + Time$ + "]" + "账号已经登陆!"
-            MsgBox "账号已经登陆!如果你不知情，请立即联系作者修改密码！", 13, "注意"
+        If data(0) = "重复登陆!" Then
+            Label1.Caption = "[" + Time$ + "]" + "账号异地登陆!"
+            MsgBox "账号异地登陆!本客户端即将关闭。如果你不知情，请立即联系作者修改密码！", 13, "注意"
+            End
         End If
         
-        If Data(0) = "ServerClose" Then
+        If data(0) = "ServerClose" Then
             Winsock1.Close
             MsgBox "服务器已关闭，即将退出客户端！", 13, "服务器关闭"
             End
+        End If
+        
+        If data(0) = "tip" Then
+            MsgBox data(1)
         End If
         
     End If
@@ -383,12 +396,12 @@ End Sub
 Public Function ToMenu(datat)
     
     datat = Replace(datat, "  ", " ")
-    Data = Split(datat, " ")
+    data = Split(datat, " ")
     If Debugmode Then Check1.Caption = "[" + Time$ + "]" + datat
     
-    If Data(0) = "selfinfo" Then
-        money = Int(Data(2))
-        Menu.L1.Caption = "欢迎，" + Data(1) + " 你的金币：" + Data(2) + " 在线玩家数：" + Data(3)
+    If data(0) = "selfinfo" Then
+        money = Int(data(2))
+        Menu.L1.Caption = "欢迎，" + data(1) + " 你的金币：" + data(2) + " 在线玩家数：" + data(3)
         If money >= 100 And Not Menu.TRoomName = "" Then
             Menu.CSet.Enabled = True
         Else
@@ -396,47 +409,55 @@ Public Function ToMenu(datat)
         End If
     End If
     
-    If Data(0) = "ServerClose" Then
+    If data(0) = "ServerClose" Then
         Winsock1.Close
         MsgBox "服务器已关闭，即将退出客户端！", 13, "服务器关闭"
         End
     End If
     
-    If Data(0) = "game" Then
+    If data(0) = "game" Then
         Game.Gamet (datat)
     End If
     
-    If Data(0) = "tip" Then
-        MsgBox Data(1)
+    If data(0) = "tip" Then
+        MsgBox data(1)
     End If
     
-    If Data(0) = "CreateRoomSucess" Then
-        roomname = Data(1)
+    If data(0) = "CreateRoomSucess" Then
+        roomname = data(1)
         Menu.Hide
         Game.Show
     End If
     
-    If Data(0) = "nowrooms" Then
+    If data(0) = "JoinRoomSucess" Then
+        roomname = data(1)
+        Menu.Hide
+        Game.Show
+    End If
+    
+    If data(0) = "nowrooms" Then
         Dim num As Integer
-        num = Int(Data(1))
+        num = Int(data(1))
         If num = 0 Then
             Menu.CJoin.Enabled = False
         Else
             Menu.CJoin.Enabled = True
         End If
         
-        allrooms = Split(Data(2), "###")
+        allrooms = Split(data(2), "###")
         Menu.List1.Clear
         For i = 0 To num - 1
             Menu.List1.AddItem allrooms(i)
         Next
     End If
     
-    If Data(0) = "reflash" Then
-        Winsock1.SendData "selfinfo"
+    If data(0) = "reflash" Then
+        Winsock1.SendData UTF8_Encode("selfinfo")
     End If
-
-
+    
+    If data(0) = "f**k" Then
+        net_shou = Int(data(1))
+    End If
 
 
 End Function

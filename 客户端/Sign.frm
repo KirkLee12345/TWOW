@@ -2,20 +2,21 @@ VERSION 5.00
 Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Begin VB.Form Sign 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "兵者-注册"
+   Caption         =   "兵者-注册 *开发测试版本，不代表最终品质"
    ClientHeight    =   3375
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   4560
+   Icon            =   "Sign.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   3375
    ScaleWidth      =   4560
-   StartUpPosition =   2  '屏幕中心
+   StartUpPosition =   1  '所有者中心
    Begin MSWinsockLib.Winsock Winsock3 
       Left            =   4200
-      Top             =   2280
+      Top             =   1920
       _ExtentX        =   741
       _ExtentY        =   741
       _Version        =   393216
@@ -104,7 +105,7 @@ Begin VB.Form Sign
       Left            =   1200
       TabIndex        =   14
       Top             =   2400
-      Width           =   2175
+      Width           =   3255
    End
    Begin VB.Label Label7 
       Height          =   255
@@ -172,6 +173,7 @@ Public ema, yzmt, zhmmyx
 
 Private Sub Command1_Click()
     
+    Command1.Enabled = False
     ema = Text1.Text
     Winsock3.Connect
 
@@ -183,7 +185,7 @@ Private Sub Command2_Click()
     If Label6.Caption = "*用户名可用*" Then
         If Label7.Caption = "*没有问题*" Then
     
-            zhmmyx = "###" + Text2.Text + "###" + Text3.Text + "###" + ema
+            zhmmyx = " " + Text2.Text + " " + Text3.Text + " " + ema
             
             If Winsock2.State <> sckClosed Then Winsock2.Close
             Winsock2.Connect
@@ -303,7 +305,7 @@ Private Sub Winsock1_Connect()
 
     Dim x As String
     x = "sign username " + Text2.Text
-    Winsock1.SendData x
+    Winsock1.SendData UTF8_Encode(x)
     
 End Sub
 
@@ -312,7 +314,9 @@ End Sub
 Private Sub Winsock1_DataArrival(ByVal bytesTotal As Long)
 
     Dim x As String
-    Winsock1.GetData x
+    Dim xx() As Byte
+    Winsock1.GetData xx
+    x = Utf8ToUnicode(xx)
     Label6.Caption = x
     Winsock1.Close
     
@@ -322,7 +326,7 @@ End Sub
 
 Private Sub Winsock2_Connect()
 
-    Winsock2.SendData "sign up " + zhmmyx + " " + Text5.Text
+    Winsock2.SendData UTF8_Encode("sign up " + zhmmyx + " " + Text5.Text)
     
 End Sub
 
@@ -331,7 +335,9 @@ End Sub
 Private Sub Winsock2_DataArrival(ByVal bytesTotal As Long)
 
     Dim x As String
-    Winsock2.GetData x
+    Dim xx() As Byte
+    Winsock2.GetData xx
+    x = Utf8ToUnicode(xx)
     Label8.Caption = x
     Winsock2.Close
     
@@ -346,7 +352,7 @@ End Sub
 
 Private Sub Winsock3_Connect()
 
-    Winsock3.SendData "sign ema " + ema
+    Winsock3.SendData UTF8_Encode("sign ema " + ema)
 
 End Sub
 
@@ -355,7 +361,9 @@ End Sub
 Private Sub Winsock3_DataArrival(ByVal bytesTotal As Long)
 
     Dim x As String
-    Winsock3.GetData x
+    Dim xx() As Byte
+    Winsock3.GetData xx
+    x = Utf8ToUnicode(xx)
     If x = "sand yzm sucess" Then
         MsgBox "验证码发送成功，请及时查看！", 13, "验证码"
         yzmt = 60

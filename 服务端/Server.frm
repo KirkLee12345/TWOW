@@ -579,6 +579,7 @@ Private Sub sckServer_DataArrival(Index As Integer, ByVal bytesTotal As Long)
     '房间
         
         If Data(1) = "create" Then
+        '创建房间
             If NameMoney.Item(IndexName(Index)) >= 100 Then
             
                 NameMoney.Item(IndexName(Index)) = NameMoney.Item(IndexName(Index)) - 100
@@ -597,13 +598,15 @@ Private Sub sckServer_DataArrival(Index As Integer, ByVal bytesTotal As Long)
         End If
         
         If Data(1) = "r" Then
+        '刷新房间
             sxRooms
         End If
         
         If Data(1) = "join" Then
+        '加入房间
             tRoom = Data(2)                     ' 2023-10-20 做到这里，接下来要完成加入房间部分
             
-
+            
             
             
             

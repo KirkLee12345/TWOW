@@ -1,17 +1,18 @@
 VERSION 5.00
 Begin VB.Form About 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "兵者-关于"
+   Caption         =   "兵者-关于 *开发测试版本，不代表最终品质"
    ClientHeight    =   4620
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   4110
+   Icon            =   "About.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   4620
    ScaleWidth      =   4110
-   StartUpPosition =   2  '屏幕中心
+   StartUpPosition =   1  '所有者中心
    Begin VB.Label Label18 
       Caption         =   "Label18"
       Height          =   255
@@ -158,7 +159,7 @@ Begin VB.Form About
       Width           =   3255
    End
    Begin VB.Label Label1 
-      Caption         =   "(C) 2022-2023 氕氘氚工作室 版权所有"
+      Caption         =   "(C) 2022-2025 氕氘氚工作室 版权所有"
       BeginProperty Font 
          Name            =   "宋体"
          Size            =   9
@@ -177,7 +178,7 @@ Begin VB.Form About
    Begin VB.Image Image1 
       Height          =   1605
       Left            =   0
-      Picture         =   "About.frx":0000
+      Picture         =   "About.frx":6988A
       Stretch         =   -1  'True
       Top             =   0
       Width           =   4125
@@ -206,7 +207,7 @@ Private Sub Form_Load()
     Label12.Caption = "美术：KirkLee123"
     Label13.Caption = "设计：KirkLee123"
     Label14.Caption = "运营：KirkLee123"
-    Label15.Caption = ""
+    Label15.Caption = "策划："
     Label16.Caption = ""
     Label17.Caption = ""
     Label18.Caption = ""
