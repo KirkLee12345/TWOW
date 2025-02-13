@@ -152,9 +152,9 @@ Private Sub Form_Load()
     
     Debugmode = False
     
-    version = 2
-    version_str = "V1.1"
-    last_date = "2025-01-29"
+    version = 3
+    version_str = "V1.2"
+    last_date = "2025-02-13"
     ll = "C:\Windows\TWOWZHMM.txt"
     
     islogin = "False"

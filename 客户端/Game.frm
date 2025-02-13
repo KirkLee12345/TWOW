@@ -744,7 +744,11 @@ Public Function Gamet(datat)
             If data(2) = "win" Then
                 MsgBox "恭喜你取得对局胜利！"
             Else
-                MsgBox "你输了，再来一把吧！"
+                If data(2) = "loss" Then
+                    MsgBox "你输了，再来一把吧！"
+                Else
+                    MsgBox "平局！再来一把吧！"
+                End If
             End If
         End If
         
